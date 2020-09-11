@@ -24,43 +24,53 @@ func Env(key, defaultValue string) string {
 
 Host deducts a target host from build environments.
 It either uses BUILD_ENDPOINT variable to read the value or
-casual composition of v${BUILD_ID}.${BUILD_DOMAIN}
+casual composition ${BUILD_ID} and ${CONFIG_ENDPOINT}
 */
-func Host(defaultValue string) string {
-	if host := hostBuildEnv(); host != "" {
+func Host(defaultValue string) *url.URL {
+	if host := hostBuildEnv(); host != nil {
 		return host
 	}
 
-	if host := hostCasual(); host != "" {
+	if host := hostCasual(); host != nil {
 		return host
 	}
 
-	return defaultValue
+	uri, err := url.Parse(defaultValue)
+	if err != nil {
+		return &url.URL{}
+	}
+
+	return uri
 }
 
-func hostBuildEnv() string {
+func hostBuildEnv() *url.URL {
 	endpoint := os.Getenv("BUILD_ENDPOINT")
 	if endpoint == "" {
-		return ""
+		return nil
 	}
 
 	uri, err := url.Parse(endpoint)
 	if err != nil {
-		return ""
+		return nil
 	}
-	return uri.Host
+	return uri
 }
 
-func hostCasual() string {
+func hostCasual() *url.URL {
 	build := os.Getenv("BUILD_ID")
 	if build == "" {
-		return ""
+		return nil
 	}
 
-	domain := os.Getenv("BUILD_DOMAIN")
-	if domain == "" {
-		return ""
+	format := os.Getenv("CONFIG_ENDPOINT")
+	if format == "" {
+		return nil
 	}
 
-	return fmt.Sprintf("v%s.%s", build, domain)
+	uri, err := url.Parse(fmt.Sprintf(format, build))
+	if err != nil {
+		return nil
+	}
+
+	return uri
 }
