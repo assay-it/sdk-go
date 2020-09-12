@@ -1,4 +1,4 @@
-package tk
+package assay
 
 import (
 	"fmt"

@@ -1,14 +1,14 @@
-package tk_test
+package assay_test
 
 import (
 	"os"
 	"testing"
 
-	"github.com/assay-it/tk"
+	"github.com/assay-it/sdk-go/assay"
 )
 
 func TestEnvDefault(t *testing.T) {
-	if tk.Env("VAR1", "undef") != "undef" {
+	if assay.Env("VAR1", "undef") != "undef" {
 		t.Error("VAR1 is defined")
 	}
 }
@@ -16,28 +16,28 @@ func TestEnvDefault(t *testing.T) {
 func TestEnv(t *testing.T) {
 	os.Setenv("VAR2", "defined")
 
-	if tk.Env("VAR2", "undef") != "defined" {
+	if assay.Env("VAR2", "undef") != "defined" {
 		t.Error("VAR is not defined")
 	}
 }
 
 func TestHostBuildDefault(t *testing.T) {
-	u := tk.Host("https://localhost")
+	u := assay.Host("https://localhost")
 	if u.String() != "https://localhost" {
 		t.Error("Unable to make default host")
 	}
 
-	u = tk.Host("https://localhost:8080")
+	u = assay.Host("https://localhost:8080")
 	if u.String() != "https://localhost:8080" {
 		t.Error("Unable to make default host")
 	}
 
-	u = tk.Host("https://localhost:8080/")
+	u = assay.Host("https://localhost:8080/")
 	if u.String() != "https://localhost:8080/" {
 		t.Error("Unable to make default host")
 	}
 
-	u = tk.Host("")
+	u = assay.Host("")
 	if u.String() != "" {
 		t.Error("Unable to make default host")
 	}
@@ -52,7 +52,7 @@ func TestHostBuildEnv(t *testing.T) {
 		"https://localhost.localdomain:8080/",
 	} {
 		os.Setenv("BUILD_ENDPOINT", env)
-		if host := tk.Host(""); host.String() != env {
+		if host := assay.Host(""); host.String() != env {
 			t.Errorf("Unexpected host environment %s", host)
 		}
 	}
@@ -63,7 +63,7 @@ func TestHostBuildComposition(t *testing.T) {
 	os.Setenv("BUILD_ID", "0")
 	os.Setenv("CONFIG_ENDPOINT", "https://v%s.example.com")
 
-	if host := tk.Host(""); host.String() != "https://v0.example.com" {
+	if host := assay.Host(""); host.String() != "https://v0.example.com" {
 		t.Errorf("Unexpected host composition %s", host)
 	}
 	os.Unsetenv("BUILD_ID")
