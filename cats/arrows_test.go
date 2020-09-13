@@ -115,3 +115,83 @@ func TestNotDefined(t *testing.T) {
 		t.Error("unable to catch undefined value")
 	}
 }
+
+type E struct{ Site string }
+
+type Seq []E
+
+func (seq Seq) Len() int                { return len(seq) }
+func (seq Seq) Swap(i, j int)           { seq[i], seq[j] = seq[j], seq[i] }
+func (seq Seq) Less(i, j int) bool      { return seq[i].Site < seq[j].Site }
+func (seq Seq) String(i int) string     { return seq[i].Site }
+func (seq Seq) Value(i int) interface{} { return seq[i] }
+
+var seqMock Seq = Seq{
+	{Site: "q.example.com"},
+	{Site: "a.example.com"},
+	{Site: "z.example.com"},
+	{Site: "w.example.com"},
+	{Site: "s.example.com"},
+	{Site: "x.example.com"},
+	{Site: "e.example.com"},
+	{Site: "d.example.com"},
+	{Site: "c.example.com"},
+}
+
+func TestSeqHas(t *testing.T) {
+	var seq Seq
+	expectS := E{Site: "s.example.com"}
+	expectZ := E{Site: "z.example.com"}
+
+	f := assay.Join(
+		ç.FMap(func() error {
+			seq = seqMock
+			return nil
+		}),
+		ç.Seq(&seq).Has(expectS.Site),
+		ç.Seq(&seq).Has(expectS.Site, expectS),
+		ç.Seq(&seq).Has(expectZ.Site, expectZ),
+	)
+	c := assay.IO()
+
+	if c = f(c); c.Fail != nil {
+		t.Error("unable to match seq")
+	}
+}
+
+func TestSeqHasNotFound(t *testing.T) {
+	var seq Seq
+	expect0 := E{Site: "0.example.com"}
+
+	f := assay.Join(
+		ç.FMap(func() error {
+			seq = seqMock
+			return nil
+		}),
+		ç.Seq(&seq).Has(expect0.Site),
+	)
+	c := assay.IO()
+
+	if c = f(c); c.Fail == nil {
+		t.Error("unable to detect missing element")
+	}
+}
+
+func TestSeqHasNoMatch(t *testing.T) {
+	var seq Seq
+	expectS := E{Site: "s.example.com"}
+	expectZ := E{Site: "z.example.com"}
+
+	f := assay.Join(
+		ç.FMap(func() error {
+			seq = seqMock
+			return nil
+		}),
+		ç.Seq(&seq).Has(expectS.Site, expectZ),
+	)
+	c := assay.IO()
+
+	if c = f(c); c.Fail == nil {
+		t.Error("unable to detect mismatched element")
+	}
+}

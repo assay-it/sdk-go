@@ -8,7 +8,10 @@
 
 package assay
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 /*
 
@@ -88,4 +91,36 @@ type Undefined struct {
 
 func (e *Undefined) Error() string {
 	return fmt.Sprintf("Value of type %v is not defined.", e.Type)
+}
+
+/*
+
+Ord extends sort.Interface with ability to lookup element by string.
+This interface is a helper abstraction to evaluate presence of element in the sequence.
+
+  assay.Join(
+    ...
+    ç.Seq(&seq).Has("example"),
+    ...
+  )
+
+The example above shows a typical usage of Ord interface. The remote peer returns sequence
+of elements. The lens Seq and Has focuses on the required element. A reference
+implementation of the interface is
+
+  type Seq []MyType
+
+  func (seq Seq) Len() int                { return len(seq) }
+  func (seq Seq) Swap(i, j int)           { seq[i], seq[j] = seq[j], seq[i] }
+  func (seq Seq) Less(i, j int) bool      { return seq[i].MyKey < seq[j].MyKey }
+  func (seq Seq) String(i int) string     { return seq[i].MyKey }
+  func (seq Seq) Value(i int) interface{} { return seq[i] }
+
+*/
+type Ord interface {
+	sort.Interface
+	// String return primary key as string type
+	String(int) string
+	// Value return value at index
+	Value(int) interface{}
 }
