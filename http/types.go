@@ -10,6 +10,7 @@ package http
 
 import (
 	"crypto/tls"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -47,7 +48,7 @@ func Join(arrows ...Arrow) assay.Arrow {
 			// Note: due to Golang HTTP pool implementation we need to consume and
 			//       discard body. Otherwise, HTTP connection is not returned to
 			//       to the pool.
-			sysio.Copy(ioutil.Discard, cat.HTTP.Recv.Response.Body)
+			io.Copy(ioutil.Discard, cat.HTTP.Recv.Response.Body)
 			cat.Fail = cat.HTTP.Recv.Body.Close()
 			cat.HTTP.Recv.Response = nil
 		}
