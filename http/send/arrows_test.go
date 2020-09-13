@@ -112,3 +112,37 @@ func TestHeaderByVal(t *testing.T) {
 		t.Error("unable to set header")
 	}
 }
+
+func TestParams(t *testing.T) {
+	type Site struct {
+		Site string `json:"site"`
+		Host string `json:"host,omitempty"`
+	}
+
+	req := http.Join(
+		ø.URL("GET", "https://example.com"),
+		ø.Params(Site{"host", "site"}),
+	)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); cat.HTTP.Send.URL.String() != "https://example.com?host=site&site=host" {
+		t.Error("failed to pass query params")
+	}
+}
+
+func TestParamsInvalidFormat(t *testing.T) {
+	type Site struct {
+		Site string `json:"site"`
+		Host int    `json:"host,omitempty"`
+	}
+
+	req := http.Join(
+		ø.URL("GET", "https://example.com"),
+		ø.Params(Site{"host", 100}),
+	)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); cat.Fail == nil {
+		t.Error("failed to reject invalid query params")
+	}
+}

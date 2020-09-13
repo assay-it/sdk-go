@@ -10,6 +10,7 @@ package send
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -110,6 +111,36 @@ func (header HtHeader) Is(value string) http.Arrow {
 func (header HtHeader) Val(value *string) http.Arrow {
 	return func(cat *assay.IOCat) *assay.IOCat {
 		cat.HTTP.Send.Header[header.string] = value
+		return cat
+	}
+}
+
+/*
+
+Params appends query params to request URL. The arrow takes a struct and
+converts it to map[string]string. The function fails if input is not convertable
+to map of strings (e.g. nested struct).
+*/
+func Params(query interface{}) http.Arrow {
+	return func(cat *assay.IOCat) *assay.IOCat {
+		bytes, err := json.Marshal(query)
+		if err != nil {
+			cat.Fail = err
+			return cat
+		}
+
+		var req map[string]string
+		err = json.Unmarshal(bytes, &req)
+		if err != nil {
+			cat.Fail = err
+			return cat
+		}
+
+		q := cat.HTTP.Send.URL.Query()
+		for k, v := range req {
+			q.Add(k, v)
+		}
+		cat.HTTP.Send.URL.RawQuery = q.Encode()
 		return cat
 	}
 }
