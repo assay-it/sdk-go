@@ -15,39 +15,39 @@ import (
 	"github.com/assay-it/sdk-go/assay"
 )
 
-func a() assay.Arrow {
+func identity() assay.Arrow {
 	return func(cat *assay.IOCat) *assay.IOCat {
 		return cat
 	}
 }
 
-func f() assay.Arrow {
+func fail() assay.Arrow {
 	return func(cat *assay.IOCat) *assay.IOCat {
 		cat.Fail = errors.New("fail")
 		return cat
 	}
 }
 
-func TestJoinAB(t *testing.T) {
-	f := assay.Join(a(), a())
+func TestJoin(t *testing.T) {
+	f := assay.Join(identity(), identity())
 
 	if f(assay.IO()).Fail != nil {
-		t.Error("a . a is failed")
+		t.Error("join is failed")
 	}
 }
 
 func TestJoinAF(t *testing.T) {
-	f := assay.Join(a(), f())
+	f := assay.Join(identity(), fail())
 
 	if f(assay.IO()).Fail == nil {
-		t.Error("a . f is failed")
+		t.Error("join with fail is failed")
 	}
 }
 
 func TestJoinFA(t *testing.T) {
-	f := assay.Join(f(), a())
+	f := assay.Join(fail(), identity())
 
 	if f(assay.IO()).Fail == nil {
-		t.Error("f . a is failed")
+		t.Error("join with fail is failed")
 	}
 }
