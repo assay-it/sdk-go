@@ -159,3 +159,24 @@ func Bytes(val *[]byte) http.Arrow {
 		return cat
 	}
 }
+
+//-------------------------------------------------------------------
+//
+// alias arrows
+//
+//-------------------------------------------------------------------
+
+// Served is a syntax sugar of Header("Content-Type")
+func Served() THeader {
+	return Header("Content-Type")
+}
+
+// ServedJSON is a syntax sugar of Header("Content-Type").Is("application/json")
+func ServedJSON() http.Arrow {
+	return Served().Is("application/json")
+}
+
+// ServedForm is a syntax sugar of Header("Content-Type", "application/x-www-form-urlencoded")
+func ServedForm() http.Arrow {
+	return Served().Is("application/x-www-form-urlencoded")
+}

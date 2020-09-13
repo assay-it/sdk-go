@@ -135,6 +135,7 @@ func TestRecvJSON(t *testing.T) {
 	req := µ.Join(
 		ø.GET(ts.URL+"/json"),
 		ƒ.Code(µ.StatusCodeOK),
+		ƒ.ServedJSON(),
 		ƒ.Recv(&site),
 	)
 	cat := assay.IO(µ.Default())
@@ -156,6 +157,7 @@ func TestRecvForm(t *testing.T) {
 	req := µ.Join(
 		ø.GET(ts.URL+"/form"),
 		ƒ.Code(µ.StatusCodeOK),
+		ƒ.ServedForm(),
 		ƒ.Recv(&site),
 	)
 	cat := assay.IO(µ.Default())
@@ -177,6 +179,7 @@ func TestRecvBytes(t *testing.T) {
 	req := µ.Join(
 		ø.GET(ts.URL+"/form"),
 		ƒ.Code(µ.StatusCodeOK),
+		ƒ.Served().Any(),
 		ƒ.Bytes(&data),
 	)
 	cat := assay.IO(µ.Default())
