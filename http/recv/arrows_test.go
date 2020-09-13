@@ -54,6 +54,75 @@ func TestCodeNoMatch(t *testing.T) {
 	}
 }
 
+func TestHeaderOk(t *testing.T) {
+	ts := mock()
+	defer ts.Close()
+
+	req := µ.Join(
+		ø.GET(ts.URL+"/json"),
+		ø.AcceptJSON(),
+		ƒ.Code(µ.StatusCodeOK),
+		ƒ.Header("content-type").Is("application/json"),
+	)
+	cat := assay.IO(µ.Default())
+
+	if cat = req(cat); cat.Fail != nil {
+		t.Error("fail to match header value")
+	}
+}
+
+func TestHeaderAny(t *testing.T) {
+	ts := mock()
+	defer ts.Close()
+
+	req := µ.Join(
+		ø.GET(ts.URL+"/json"),
+		ø.AcceptJSON(),
+		ƒ.Code(µ.StatusCodeOK),
+		ƒ.Header("content-type").Any(),
+	)
+	cat := assay.IO(µ.Default())
+
+	if cat = req(cat); cat.Fail != nil {
+		t.Error("fail to match header value")
+	}
+}
+
+func TestHeaderVal(t *testing.T) {
+	ts := mock()
+	defer ts.Close()
+
+	var content string
+	req := µ.Join(
+		ø.GET(ts.URL+"/json"),
+		ø.AcceptJSON(),
+		ƒ.Code(µ.StatusCodeOK),
+		ƒ.Header("content-type").String(&content),
+	)
+	cat := assay.IO(µ.Default())
+
+	if cat = req(cat); cat.Fail != nil || content != "application/json" {
+		t.Error("fail to match header value")
+	}
+}
+
+func TestHeaderMismatch(t *testing.T) {
+	ts := mock()
+	defer ts.Close()
+
+	req := µ.Join(
+		ø.GET(ts.URL+"/json"),
+		ø.AcceptJSON(),
+		ƒ.Code(µ.StatusCodeOK),
+		ƒ.Header("content-type").Is("foo/bar"),
+	)
+	cat := assay.IO(µ.Default())
+
+	if cat = req(cat); cat.Fail == nil {
+		t.Error("fail to detect header mismatch")
+	}
+}
+
 //
 func mock() *httptest.Server {
 	return httptest.NewServer(

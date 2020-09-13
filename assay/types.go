@@ -68,3 +68,13 @@ func IO(opts ...Config) *IOCat {
 	}
 	return cat
 }
+
+// Mismatch is returned by api if expectation at body value is failed
+type Mismatch struct {
+	Diff    string
+	Payload interface{}
+}
+
+func (e *Mismatch) Error() string {
+	return e.Diff
+}
