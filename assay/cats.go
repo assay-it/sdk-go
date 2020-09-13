@@ -19,18 +19,26 @@ import (
 IOCatHTTP defines the category of HTTP I/O
 */
 type IOCatHTTP struct {
-	Send *HTTPSender
-	Recv *HTTPRecver
+	Send *UpStreamHTTP
+	Recv *DnStreamHTTP
 }
 
-type HTTPSender struct {
+/*
+
+UpStreamHTTP specify parameters for HTTP requests
+*/
+type UpStreamHTTP struct {
 	Method  string
 	URL     *url.URL
 	Header  map[string]*string
 	Payload *bytes.Buffer
 }
 
-type HTTPRecver struct {
+/*
+
+DnStreamHTTP specify parameters for HTTP response
+*/
+type DnStreamHTTP struct {
 	*http.Response
 	Body interface{}
 }
