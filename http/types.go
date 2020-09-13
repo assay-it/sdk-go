@@ -10,6 +10,7 @@ package http
 
 import (
 	"crypto/tls"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -32,10 +33,23 @@ Join composes HTTP arrows to high-order function
 */
 func Join(arrows ...Arrow) assay.Arrow {
 	return func(cat *assay.IOCat) *assay.IOCat {
+		if cat.Fail != nil {
+			return cat
+		}
+
 		for _, f := range arrows {
 			if cat = f(cat); cat.Fail != nil {
 				return cat
 			}
+		}
+
+		if cat.HTTP != nil && cat.HTTP.Recv != nil && cat.HTTP.Recv.Response != nil {
+			// Note: due to Golang HTTP pool implementation we need to consume and
+			//       discard body. Otherwise, HTTP connection is not returned to
+			//       to the pool.
+			sysio.Copy(ioutil.Discard, cat.HTTP.Recv.Response.Body)
+			cat.Fail = cat.HTTP.Recv.Body.Close()
+			cat.HTTP.Recv.Response = nil
 		}
 
 		return cat
