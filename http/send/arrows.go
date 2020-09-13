@@ -77,3 +77,39 @@ func mkURL(uri string, args ...interface{}) (*url.URL, error) {
 
 	return url.Parse(fmt.Sprintf(uri, opts...))
 }
+
+/*
+
+HtHeader is tagged string, represents HTTP Header
+*/
+type HtHeader struct{ string }
+
+/*
+
+Header defines HTTP headers to the request, use combinator
+to define multiple header values.
+
+  http.HTTP(
+		ø.Header("Accept").Is(...),
+		ø.Header("Content-Type").Is(...),
+	)
+*/
+func Header(header string) HtHeader {
+	return HtHeader{header}
+}
+
+// Is sets a literval value of HTTP header
+func (header HtHeader) Is(value string) http.Arrow {
+	return func(cat *assay.IOCat) *assay.IOCat {
+		cat.HTTP.Send.Header[header.string] = &value
+		return cat
+	}
+}
+
+// Val sets a value of HTTP header from variable
+func (header HtHeader) Val(value *string) http.Arrow {
+	return func(cat *assay.IOCat) *assay.IOCat {
+		cat.HTTP.Send.Header[header.string] = value
+		return cat
+	}
+}

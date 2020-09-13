@@ -86,3 +86,29 @@ func TestURLType(t *testing.T) {
 		t.Error("unable to assign params to url")
 	}
 }
+
+func TestHeaderByLit(t *testing.T) {
+	req := http.Join(
+		ø.URL("GET", "http://example.com"),
+		ø.Header("Accept").Is("text/plain"),
+	)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); *cat.HTTP.Send.Header["Accept"] != "text/plain" {
+		t.Error("unable to set header")
+	}
+}
+
+func TestHeaderByVal(t *testing.T) {
+	val := "text/plain"
+
+	req := http.Join(
+		ø.URL("GET", "http://example.com"),
+		ø.Header("Accept").Val(&val),
+	)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); *cat.HTTP.Send.Header["Accept"] != "text/plain" {
+		t.Error("unable to set header")
+	}
+}
