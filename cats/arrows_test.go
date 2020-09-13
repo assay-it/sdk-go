@@ -71,3 +71,47 @@ func TestFlatMap(t *testing.T) {
 		t.Error("unable to FlatMap")
 	}
 }
+
+func TestDefined(t *testing.T) {
+	type Site struct {
+		Site string
+		Host string
+	}
+	var site Site
+
+	f := assay.Join(
+		ç.FMap(func() error {
+			site = Site{"site", "host"}
+			return nil
+		}),
+		ç.Defined(&site),
+		ç.Defined(&site.Site),
+	)
+	c := assay.IO()
+
+	if c = f(c); c.Fail != nil {
+		t.Error("unable to check is value is defined")
+	}
+}
+
+func TestNotDefined(t *testing.T) {
+	type Site struct {
+		Site string
+		Host string
+	}
+	var site Site
+
+	f := assay.Join(
+		ç.FMap(func() error {
+			site = Site{"site", ""}
+			return nil
+		}),
+		ç.Defined(&site),
+		ç.Defined(&site.Host),
+	)
+	c := assay.IO()
+
+	if c = f(c); c.Fail == nil {
+		t.Error("unable to catch undefined value")
+	}
+}

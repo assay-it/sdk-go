@@ -8,7 +8,11 @@
 
 package cats
 
-import "github.com/assay-it/sdk-go/assay"
+import (
+	"reflect"
+
+	"github.com/assay-it/sdk-go/assay"
+)
 
 /*
 
@@ -32,6 +36,28 @@ func FlatMap(f func() assay.Arrow) assay.Arrow {
 	return func(cat *assay.IOCat) *assay.IOCat {
 		if g := f(); g != nil {
 			return g(cat)
+		}
+		return cat
+	}
+}
+
+/*
+
+Defined checks if the value is defined, use a pointer to the value.
+*/
+func Defined(value interface{}) assay.Arrow {
+	return func(cat *assay.IOCat) *assay.IOCat {
+		va := reflect.ValueOf(value)
+		if va.Kind() == reflect.Ptr {
+			va = va.Elem()
+		}
+
+		if !va.IsValid() {
+			cat.Fail = &assay.Undefined{Type: va.Type().Name()}
+		}
+
+		if va.IsValid() && va.IsZero() {
+			cat.Fail = &assay.Undefined{Type: va.Type().Name()}
 		}
 		return cat
 	}

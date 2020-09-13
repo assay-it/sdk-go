@@ -8,6 +8,8 @@
 
 package assay
 
+import "fmt"
+
 /*
 
 IOCat defines the category for abstract I/O with a side-effects
@@ -77,4 +79,13 @@ type Mismatch struct {
 
 func (e *Mismatch) Error() string {
 	return e.Diff
+}
+
+// Undefined is returned by api if expectation at body value is failed
+type Undefined struct {
+	Type string
+}
+
+func (e *Undefined) Error() string {
+	return fmt.Sprintf("Value of type %v is not defined.", e.Type)
 }
