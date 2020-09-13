@@ -107,7 +107,7 @@ func (p pool) Unsafe(cat *assay.IOCat) *assay.IOCat {
 		return cat
 	}
 
-	cat.HTTP.Recv = &assay.HTTPRecver{Response: in}
+	cat.HTTP.Recv = &assay.DnStreamHTTP{Response: in}
 
 	logSend(cat.LogLevel, eg)
 	logRecv(cat.LogLevel, in)

@@ -40,7 +40,7 @@ func URL(method, uri string, args ...interface{}) http.Arrow {
 
 		switch addr.Scheme {
 		case "http", "https":
-			cat.HTTP.Send = &assay.HTTPSender{
+			cat.HTTP.Send = &assay.UpStreamHTTP{
 				Method:  method,
 				URL:     addr,
 				Header:  make(map[string]*string),
