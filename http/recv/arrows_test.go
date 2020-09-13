@@ -123,6 +123,69 @@ func TestHeaderMismatch(t *testing.T) {
 	}
 }
 
+func TestRecvJSON(t *testing.T) {
+	type Site struct {
+		Site string `json:"site"`
+	}
+
+	ts := mock()
+	defer ts.Close()
+
+	var site Site
+	req := µ.Join(
+		ø.GET(ts.URL+"/json"),
+		ƒ.Code(µ.StatusCodeOK),
+		ƒ.Recv(&site),
+	)
+	cat := assay.IO(µ.Default())
+
+	if cat = req(cat); cat.Fail != nil || site.Site != "example.com" {
+		t.Error("failed to receive json")
+	}
+}
+
+func TestRecvForm(t *testing.T) {
+	type Site struct {
+		Site string `json:"site"`
+	}
+
+	ts := mock()
+	defer ts.Close()
+
+	var site Site
+	req := µ.Join(
+		ø.GET(ts.URL+"/form"),
+		ƒ.Code(µ.StatusCodeOK),
+		ƒ.Recv(&site),
+	)
+	cat := assay.IO(µ.Default())
+
+	if cat = req(cat); cat.Fail != nil || site.Site != "example.com" {
+		t.Error("failed to receive json")
+	}
+}
+
+func TestRecvBytes(t *testing.T) {
+	type Site struct {
+		Site string `json:"site"`
+	}
+
+	ts := mock()
+	defer ts.Close()
+
+	var data []byte
+	req := µ.Join(
+		ø.GET(ts.URL+"/form"),
+		ƒ.Code(µ.StatusCodeOK),
+		ƒ.Bytes(&data),
+	)
+	cat := assay.IO(µ.Default())
+
+	if cat = req(cat); cat.Fail != nil || string(data) != "site=example.com" {
+		t.Error("failed to receive json")
+	}
+}
+
 //
 func mock() *httptest.Server {
 	return httptest.NewServer(
@@ -131,6 +194,9 @@ func mock() *httptest.Server {
 			case r.URL.Path == "/json":
 				w.Header().Add("Content-Type", "application/json")
 				w.Write([]byte(`{"site": "example.com"}`))
+			case r.URL.Path == "/form":
+				w.Header().Add("Content-Type", "application/x-www-form-urlencoded")
+				w.Write([]byte("site=example.com"))
 			default:
 				w.WriteHeader(http.StatusBadRequest)
 			}

@@ -9,9 +9,13 @@
 package recv
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"strings"
 
+	"github.com/ajg/form"
 	"github.com/assay-it/sdk-go/assay"
 	"github.com/assay-it/sdk-go/http"
 )
@@ -107,4 +111,51 @@ func (header THeader) String(value *string) http.Arrow {
 // Any matches a header value, syntax sugar of Header(...).Is("*")
 func (header THeader) Any() http.Arrow {
 	return header.Is("*")
+}
+
+/*
+
+Recv applies auto decoders for response and returns either binary or
+native Go data structure. The Content-Type header give a hint to decoder.
+Supply the pointer to data target data structure.
+*/
+func Recv(out interface{}) http.Arrow {
+	return func(cat *assay.IOCat) *assay.IOCat {
+		cat.Fail = decode(
+			cat.HTTP.Recv.Header.Get("Content-Type"),
+			cat.HTTP.Recv.Body,
+			&out,
+		)
+		cat.HTTP.Recv.Body.Close()
+		cat.HTTP.Recv.Payload = out
+		cat.HTTP.Recv.Response = nil
+		return cat
+	}
+}
+
+func decode(content string, stream io.ReadCloser, data interface{}) error {
+	switch {
+	case strings.Contains(content, "json"):
+		return json.NewDecoder(stream).Decode(&data)
+	case strings.Contains(content, "www-form"):
+		return form.NewDecoder(stream).Decode(&data)
+	default:
+		return &assay.Mismatch{
+			Diff:    fmt.Sprintf("- Content-Type: application/*\n+ Content-Type: %s", content),
+			Payload: map[string]string{"Content-Type": content},
+		}
+	}
+}
+
+/*
+
+Bytes receive raw binary from HTTP response
+*/
+func Bytes(val *[]byte) http.Arrow {
+	return func(cat *assay.IOCat) *assay.IOCat {
+		*val, cat.Fail = ioutil.ReadAll(cat.HTTP.Recv.Body)
+		cat.Fail = cat.HTTP.Recv.Body.Close()
+		cat.HTTP.Recv.Response = nil
+		return cat
+	}
 }

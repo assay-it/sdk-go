@@ -40,5 +40,5 @@ DnStreamHTTP specify parameters for HTTP response
 */
 type DnStreamHTTP struct {
 	*http.Response
-	Body interface{}
+	Payload interface{}
 }
