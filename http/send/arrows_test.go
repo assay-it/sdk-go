@@ -94,7 +94,7 @@ func TestHeaderByLit(t *testing.T) {
 	)
 	cat := assay.IO(http.Default())
 
-	if cat = req(cat); *cat.HTTP.Send.Header["Accept"] != "text/plain" {
+	if cat = req(cat); *cat.HTTP.Send.Header["accept"] != "text/plain" {
 		t.Error("unable to set header")
 	}
 }
@@ -108,7 +108,7 @@ func TestHeaderByVal(t *testing.T) {
 	)
 	cat := assay.IO(http.Default())
 
-	if cat = req(cat); *cat.HTTP.Send.Header["Accept"] != "text/plain" {
+	if cat = req(cat); *cat.HTTP.Send.Header["accept"] != "text/plain" {
 		t.Error("unable to set header")
 	}
 }
@@ -144,5 +144,76 @@ func TestParamsInvalidFormat(t *testing.T) {
 
 	if cat = req(cat); cat.Fail == nil {
 		t.Error("failed to reject invalid query params")
+	}
+}
+
+func TestSendJSON(t *testing.T) {
+	type Site struct {
+		Site string `json:"site"`
+		Host string `json:"host,omitempty"`
+	}
+
+	req := http.Join(
+		ø.URL("GET", "https://example.com"),
+		ø.Header("Content-Type").Is("application/json"),
+		ø.Send(Site{"host", "site"}),
+	)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); cat.HTTP.Send.Payload.String() != "{\"site\":\"host\",\"host\":\"site\"}" {
+		t.Error("failed to encode JSON")
+	}
+}
+
+func TestSendForm(t *testing.T) {
+	type Site struct {
+		Site string `json:"site"`
+		Host string `json:"host,omitempty"`
+	}
+
+	req := http.Join(
+		ø.URL("GET", "https://example.com"),
+		ø.Header("Content-Type").Is("application/x-www-form-urlencoded"),
+		ø.Send(Site{"host", "site"}),
+	)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); cat.HTTP.Send.Payload.String() != "host=site&site=host" {
+		t.Error("failed to encode forms")
+	}
+}
+
+func TestSendUnknown(t *testing.T) {
+	type Site struct {
+		Site string `json:"site"`
+		Host string `json:"host,omitempty"`
+	}
+
+	req := http.Join(
+		ø.URL("GET", "https://example.com"),
+		ø.Send(Site{"host", "site"}),
+	)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); cat.Fail == nil {
+		t.Error("failed to complain about missing Content-Type")
+	}
+}
+
+func TestSendNotSupported(t *testing.T) {
+	type Site struct {
+		Site string `json:"site"`
+		Host string `json:"host,omitempty"`
+	}
+
+	req := http.Join(
+		ø.URL("GET", "https://example.com"),
+		ø.Header("Content-Type").Is("foo/bar"),
+		ø.Send(Site{"host", "site"}),
+	)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); cat.Fail == nil {
+		t.Error("failed to complain about unsupported format")
 	}
 }
