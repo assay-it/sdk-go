@@ -38,6 +38,10 @@ func URL(method, uri string, args ...interface{}) http.Arrow {
 			return cat
 		}
 
+		if cat.HTTP == nil {
+			cat.HTTP = &assay.IOCatHTTP{}
+		}
+
 		switch addr.Scheme {
 		case "http", "https":
 			cat.HTTP.Send = &assay.UpStreamHTTP{

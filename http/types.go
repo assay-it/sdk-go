@@ -32,8 +32,6 @@ Join composes HTTP arrows to high-order function
 */
 func Join(arrows ...Arrow) assay.Arrow {
 	return func(cat *assay.IOCat) *assay.IOCat {
-		cat.HTTP = &assay.IOCatHTTP{}
-
 		for _, f := range arrows {
 			if cat = f(cat); cat.Fail != nil {
 				return cat
