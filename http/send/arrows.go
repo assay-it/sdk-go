@@ -81,9 +81,9 @@ func mkURL(uri string, args ...interface{}) (*url.URL, error) {
 
 /*
 
-HtHeader is tagged string, represents HTTP Header
+THeader is tagged string, represents HTTP Header
 */
-type HtHeader struct{ string }
+type THeader struct{ string }
 
 /*
 
@@ -95,16 +95,16 @@ to define multiple header values.
 		ø.Header("Content-Type").Is(...),
 	)
 */
-func Header(header string) HtHeader {
-	return HtHeader{header}
+func Header(header string) THeader {
+	return THeader{header}
 }
 
-func (header HtHeader) name() string {
+func (header THeader) name() string {
 	return strings.ToLower(header.string)
 }
 
 // Is sets a literval value of HTTP header
-func (header HtHeader) Is(value string) http.Arrow {
+func (header THeader) Is(value string) http.Arrow {
 	return func(cat *assay.IOCat) *assay.IOCat {
 		cat.HTTP.Send.Header[header.name()] = &value
 		return cat
@@ -112,7 +112,7 @@ func (header HtHeader) Is(value string) http.Arrow {
 }
 
 // Val sets a value of HTTP header from variable
-func (header HtHeader) Val(value *string) http.Arrow {
+func (header THeader) Val(value *string) http.Arrow {
 	return func(cat *assay.IOCat) *assay.IOCat {
 		cat.HTTP.Send.Header[header.name()] = value
 		return cat
@@ -206,4 +206,70 @@ func encodeForm(data interface{}) (*bytes.Buffer, error) {
 		payload[key] = []string{val}
 	}
 	return bytes.NewBuffer([]byte(payload.Encode())), nil
+}
+
+//-------------------------------------------------------------------
+//
+// arrows aliases
+//
+//-------------------------------------------------------------------
+
+// GET is syntax sugar of URL("GET", ...)
+func GET(uri string, args ...interface{}) http.Arrow {
+	return URL("GET", uri, args...)
+}
+
+// POST is syntax sugar of URL("POST", ...)
+func POST(uri string, args ...interface{}) http.Arrow {
+	return URL("POST", uri, args...)
+}
+
+// PUT is syntax sugar of URL("PUT", ...)
+func PUT(uri string, args ...interface{}) http.Arrow {
+	return URL("PUT", uri, args...)
+}
+
+// DELETE is syntax sugar of URL("DELETE", ...)
+func DELETE(uri string, args ...interface{}) http.Arrow {
+	return URL("DELETE", uri, args...)
+}
+
+// Accept is syntax sugar of Header("Accept")
+func Accept() THeader {
+	return Header("Accept")
+}
+
+// AcceptJSON is syntax sugar of Header("Accept").Is("application/json")
+func AcceptJSON() http.Arrow {
+	return Accept().Is("application/json")
+}
+
+// AcceptForm is syntax sugar of Header("Accept").Is("application/x-www-form-urlencoded")
+func AcceptForm() http.Arrow {
+	return Accept().Is("application/x-www-form-urlencoded")
+}
+
+// Content is syntax sugar of Header("Content-Type")
+func Content() THeader {
+	return Header("Content-Type")
+}
+
+// ContentJSON is syntax sugar of Header("Content-Type").Is("application/json")
+func ContentJSON() http.Arrow {
+	return Content().Is("application/json")
+}
+
+// ContentForm is syntax sugar of Header("Content-Type").Is("application/x-www-form-urlencoded")
+func ContentForm() http.Arrow {
+	return Content().Is("application/x-www-form-urlencoded")
+}
+
+// KeepAlive is a syntax sugar of Header("Connection").Is("keep-alive")
+func KeepAlive() http.Arrow {
+	return Header("Connection").Is("keep-alive")
+}
+
+// Authorization is syntax sugar of Header("Authorization")
+func Authorization() THeader {
+	return Header("Authorization")
 }

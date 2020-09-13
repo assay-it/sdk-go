@@ -217,3 +217,48 @@ func TestSendNotSupported(t *testing.T) {
 		t.Error("failed to complain about unsupported format")
 	}
 }
+
+func TestAliasesURL(t *testing.T) {
+	for mthd, f := range map[string]func(string, ...interface{}) http.Arrow{
+		"GET":    ø.GET,
+		"PUT":    ø.PUT,
+		"POST":   ø.POST,
+		"DELETE": ø.DELETE,
+	} {
+		req := f("https://example.com/%s/%v", "a", 1)
+		cat := assay.IO(http.Default())
+
+		if cat = req(cat); cat.HTTP.Send.URL.String() != "https://example.com/a/1" || cat.HTTP.Send.Method != mthd {
+			t.Errorf("alias ø.%s is broken", mthd)
+		}
+	}
+}
+
+func TestAliasesHeader(t *testing.T) {
+	type Unit struct {
+		header string
+		value  string
+		arrow  http.Arrow
+	}
+
+	for _, unit := range []Unit{
+		{"accept", "foo/bar", ø.Accept().Is("foo/bar")},
+		{"accept", "application/json", ø.AcceptJSON()},
+		{"accept", "application/x-www-form-urlencoded", ø.AcceptForm()},
+		{"content-type", "foo/bar", ø.Content().Is("foo/bar")},
+		{"content-type", "application/json", ø.ContentJSON()},
+		{"content-type", "application/x-www-form-urlencoded", ø.ContentForm()},
+		{"connection", "keep-alive", ø.KeepAlive()},
+		{"authorization", "foo bar", ø.Authorization().Is("foo bar")},
+	} {
+		req := http.Join(
+			ø.URL("GET", "http://example.com"),
+			unit.arrow,
+		)
+		cat := assay.IO(http.Default())
+
+		if cat = req(cat); *cat.HTTP.Send.Header[unit.header] != unit.value {
+			t.Error("unable to set header")
+		}
+	}
+}
