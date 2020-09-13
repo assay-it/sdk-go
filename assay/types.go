@@ -10,45 +10,28 @@ package assay
 
 /*
 
-Config defines configuration for the IO category
-*/
-type Config func(*IOCat) *IOCat
-
-/*
-
-Logging enables debug logging of IO traffic
-*/
-func Logging(level int) Config {
-	return func(cat *IOCat) *IOCat {
-		cat.loglevel = level
-		return cat
-	}
-}
-
-/*
-
-Log Level constants, use with Logging config
-	- Level 0: disable debug logging (default)
-	- Level 1: log only egress traffic
-  - Level 2: log only ingress traffic
-  - Level 3: log full content of packets
-*/
-const (
-	//
-	LogLevelNone    = 0
-	LogLevelEgress  = 1
-	LogLevelIngress = 2
-	LogLevelDebug   = 3
-)
-
-/*
-
 IOCat defines the category for abstract I/O with a side-effects
 */
 type IOCat struct {
-	Fail     error
-	loglevel int
+	Fail       error
+	HTTP       *IOCatHTTP
+	LogLevel   int
+	sideEffect Arrow
 }
+
+/*
+
+Unsafe applies a side effect on the category
+*/
+func (cat *IOCat) Unsafe() *IOCat {
+	return cat.sideEffect(cat)
+}
+
+/*
+
+Config defines configuration for the IO category
+*/
+type Config func(*IOCat) *IOCat
 
 /*
 
@@ -64,9 +47,6 @@ Join composes arrows to high-order function
 */
 func Join(arrows ...Arrow) Arrow {
 	return func(cat *IOCat) *IOCat {
-		if cat.Fail != nil {
-			return cat
-		}
 		for _, f := range arrows {
 			if cat = f(cat); cat.Fail != nil {
 				return cat
