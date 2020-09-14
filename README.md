@@ -52,11 +52,11 @@ func TestOk() assay.Arrow {
 }
 
 func main() {
-	cat := assay.IO(
-		http.Default(),
-		assay.Logging(assay.LogLevelDebug),
-	)
-	TestOk()(cat)
+  cat := assay.IO(
+    http.Default(),
+    assay.Logging(assay.LogLevelDebug),
+  )
+  TestOk()(cat)
 }
 ```
 
