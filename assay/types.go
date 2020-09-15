@@ -63,6 +63,25 @@ func Join(arrows ...Arrow) Arrow {
 
 /*
 
+Then is an alias for Join
+*/
+func (head Arrow) Then(arrows ...Arrow) Arrow {
+	return func(cat *IOCat) *IOCat {
+		if cat = head(cat); cat.Fail != nil {
+			return cat
+		}
+
+		for _, f := range arrows {
+			if cat = f(cat); cat.Fail != nil {
+				return cat
+			}
+		}
+		return cat
+	}
+}
+
+/*
+
 IO creates the instance of I/O category use Config type to parametrize
 the behavior. The returned value is used to evaluate program.
 */

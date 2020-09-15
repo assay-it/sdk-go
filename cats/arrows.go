@@ -65,6 +65,40 @@ func Defined(value interface{}) assay.Arrow {
 	}
 }
 
+// TValue is tagged type, represent matchers
+type TValue struct{ actual interface{} }
+
+/*
+Value checks if the value equals to defined one.
+Supply the pointer to actual value
+*/
+func Value(val interface{}) TValue {
+	return TValue{val}
+}
+
+// Is matches a value
+func (val TValue) Is(require interface{}) assay.Arrow {
+	return func(io *assay.IOCat) *assay.IOCat {
+		if diff := cmp.Diff(val.actual, require); diff != "" {
+			io.Fail = &assay.Mismatch{
+				Diff:    diff,
+				Payload: val.actual,
+			}
+		}
+		return io
+	}
+}
+
+// String matches a literal value
+func (val TValue) String(require string) assay.Arrow {
+	return val.Is(&require)
+}
+
+// Bytes matches a literal value of bytes
+func (val TValue) Bytes(require []byte) assay.Arrow {
+	return val.Is(&require)
+}
+
 // TSeq is tagged type, represents Sequence of elements
 type TSeq struct{ assay.Ord }
 
