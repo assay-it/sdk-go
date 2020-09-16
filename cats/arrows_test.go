@@ -116,6 +116,50 @@ func TestNotDefined(t *testing.T) {
 	}
 }
 
+func TestValue(t *testing.T) {
+	type Site struct {
+		Site string
+		Host []byte
+	}
+	var site Site
+
+	f := assay.Join(
+		ç.FMap(func() error {
+			site = Site{"site", []byte("abc")}
+			return nil
+		}),
+		ç.Value(&site).Is(&Site{"site", []byte("abc")}),
+		ç.Value(&site.Site).String("site"),
+		ç.Value(&site.Host).Bytes([]byte("abc")),
+	)
+	c := assay.IO()
+
+	if c = f(c); c.Fail != nil {
+		t.Error("unable to match value")
+	}
+}
+
+func TestValueNoMatch(t *testing.T) {
+	type Site struct {
+		Site string
+		Host []byte
+	}
+	var site Site
+
+	f := assay.Join(
+		ç.FMap(func() error {
+			site = Site{"site", []byte("abc")}
+			return nil
+		}),
+		ç.Value(&site).Is(&Site{"site1", []byte("abc")}),
+	)
+	c := assay.IO()
+
+	if c = f(c); c.Fail == nil {
+		t.Error("unable to detect mismatched value(s)")
+	}
+}
+
 type E struct{ Site string }
 
 type Seq []E

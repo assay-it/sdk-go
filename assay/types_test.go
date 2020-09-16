@@ -51,3 +51,27 @@ func TestJoinFA(t *testing.T) {
 		t.Error("join with fail is failed")
 	}
 }
+
+func TestThen(t *testing.T) {
+	f := identity().Then(identity())
+
+	if f(assay.IO()).Fail != nil {
+		t.Error("join is failed")
+	}
+}
+
+func TestThenAF(t *testing.T) {
+	f := identity().Then(fail())
+
+	if f(assay.IO()).Fail == nil {
+		t.Error("join with fail is failed")
+	}
+}
+
+func TestThenFA(t *testing.T) {
+	f := fail().Then(identity())
+
+	if f(assay.IO()).Fail == nil {
+		t.Error("join with fail is failed")
+	}
+}
