@@ -156,6 +156,7 @@ func Bytes(val *[]byte) http.Arrow {
 		*val, cat.Fail = ioutil.ReadAll(cat.HTTP.Recv.Body)
 		cat.Fail = cat.HTTP.Recv.Body.Close()
 		cat.HTTP.Recv.Response = nil
+		cat.HTTP.Recv.Payload = string(*val)
 		return cat
 	}
 }
