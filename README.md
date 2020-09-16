@@ -5,7 +5,7 @@
 [![Documentation](https://pkg.go.dev/badge/github.com/assay-it/sdk-go)](https://pkg.go.dev/github.com/assay-it/sdk-go)
 [![Build Status](https://github.com/assay-it/sdk-go/workflows/build/badge.svg)](https://github.com/assay-it/sdk-go/actions/)
 [![Git Hub](https://img.shields.io/github/last-commit/assay-it/sdk-go.svg)](http://github.com/assay-it/sdk-go)
-[![Coverage Status](https://coveralls.io/repos/github/assay-it/sdk-go/badge.svg?branch=master)](https://coveralls.io/github/assay-it/sdk-go?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/assay-it/sdk-go/badge.svg?branch=master)](https://coveralls.io/github/assay-it/sdk-go?branch=main)
 [![Go Report Card](https://goreportcard.com/badge/github.com/assay-it/sdk-go)](https://goreportcard.com/report/github.com/assay-it/sdk-go)
 [![Maintainability](https://api.codeclimate.com/v1/badges/9e6bbe00ab093e5465ff/maintainability)](https://codeclimate.com/github/assay-it/sdk-go/maintainability)
 
@@ -81,7 +81,7 @@ SDK is [MIT](LICENSE) licensed and accepts contributions via GitHub pull request
 
 ### bugs
 
-If you experience any issues with SDK, please let us know via [GitHub issues](https://github.com/assay-it/sdk-go/issue). We appreciate detailed and accurate reports that help us to identity and replicate the issue. 
+If you experience any issues with SDK, please let us know via [GitHub issues](https://github.com/assay-it/sdk-go/issues). We appreciate detailed and accurate reports that help us to identity and replicate the issue. 
 
 
 ## License
