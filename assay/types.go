@@ -10,6 +10,7 @@ package assay
 
 import (
 	"fmt"
+	"net/url"
 	"sort"
 )
 
@@ -91,6 +92,13 @@ func IO(opts ...Config) *IOCat {
 		cat = opt(cat)
 	}
 	return cat
+}
+
+// NotSupported is returned if communication schema is not supported.
+type NotSupported struct{ URL *url.URL }
+
+func (e *NotSupported) Error() string {
+	return fmt.Sprintf("Not supported: %s", e.URL.String())
 }
 
 // Mismatch is returned by api if expectation at body value is failed

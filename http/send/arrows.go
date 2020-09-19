@@ -11,7 +11,6 @@ package send
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/url"
 	"reflect"
@@ -52,8 +51,7 @@ func URL(method, uri string, args ...interface{}) http.Arrow {
 				Payload: bytes.NewBuffer(nil),
 			}
 		default:
-			cat.Fail = errors.New("Not supported")
-			// io.Fail = xxxx.ProtocolNotSupported(io.URL.String())
+			cat.Fail = &assay.NotSupported{URL: addr}
 		}
 		return cat
 	}

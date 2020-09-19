@@ -29,7 +29,7 @@ import (
 /*
 
 Code is a mandatory statement to match expected HTTP Status Code against
-received one. The execution fails with BadMatchCode if service responds
+received one. The execution fails with StatusCode error if service responds
 with other value then specified one.
 */
 func Code(code ...http.StatusCodeAny) http.Arrow {
