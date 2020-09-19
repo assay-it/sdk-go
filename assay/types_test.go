@@ -29,49 +29,25 @@ func fail() assay.Arrow {
 }
 
 func TestJoin(t *testing.T) {
-	f := assay.Join(identity(), identity())
-
-	if f(assay.IO()).Fail != nil {
-		t.Error("join is failed")
+	for _, f := range []assay.Arrow{
+		assay.Join(identity(), identity()),
+		identity().Then(identity()),
+	} {
+		if f(assay.IO()).Fail != nil {
+			t.Error("join is failed")
+		}
 	}
 }
 
-func TestJoinAF(t *testing.T) {
-	f := assay.Join(identity(), fail())
-
-	if f(assay.IO()).Fail == nil {
-		t.Error("join with fail is failed")
-	}
-}
-
-func TestJoinFA(t *testing.T) {
-	f := assay.Join(fail(), identity())
-
-	if f(assay.IO()).Fail == nil {
-		t.Error("join with fail is failed")
-	}
-}
-
-func TestThen(t *testing.T) {
-	f := identity().Then(identity())
-
-	if f(assay.IO()).Fail != nil {
-		t.Error("join is failed")
-	}
-}
-
-func TestThenAF(t *testing.T) {
-	f := identity().Then(fail())
-
-	if f(assay.IO()).Fail == nil {
-		t.Error("join with fail is failed")
-	}
-}
-
-func TestThenFA(t *testing.T) {
-	f := fail().Then(identity())
-
-	if f(assay.IO()).Fail == nil {
-		t.Error("join with fail is failed")
+func TestJoinFail(t *testing.T) {
+	for _, f := range []assay.Arrow{
+		assay.Join(identity(), fail()),
+		assay.Join(fail(), identity()),
+		identity().Then(fail()),
+		fail().Then(identity()),
+	} {
+		if f(assay.IO()).Fail == nil {
+			t.Error("join with fail is failed")
+		}
 	}
 }
