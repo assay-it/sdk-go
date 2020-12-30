@@ -1,8 +1,9 @@
 /*
 
 Package sdk is used to develop **pure functional** and **typesafe** Behavior as
-a Code to validate applications. https://assay.it automates the validation
-process along CI/CD pipelines. Continuous proofs of the quality helps to
+a Code to construct automated quality assessment pipelines for your
+applications across deployments and environments. Use this SDK to develop CI/CD
+suites for https://assay.it. Continuous proofs of the quality helps developers to
 eliminate defects at earlier phases of loosely coupled topologies such as
 serverless applications, microservices and other systems that rely on interface
 syntaxes and its behaviors.
