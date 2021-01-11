@@ -51,3 +51,31 @@ func TestJoinFail(t *testing.T) {
 		}
 	}
 }
+
+func TestRecover(t *testing.T) {
+	c := assay.IO()
+
+	c = identity()(c)
+	if c.Fail != nil {
+		t.Error("IOCat fails")
+	}
+	if c.Recover() != nil {
+		t.Error("IOCat fails")
+	}
+
+	c = fail()(c)
+	if c.Fail != nil {
+		t.Error("IOCat fails")
+	}
+	if c.Recover() != nil {
+		t.Error("IOCat fails")
+	}
+
+	c = identity()(c)
+	if c.Fail != nil {
+		t.Error("IOCat fails")
+	}
+	if c.Recover() != nil {
+		t.Error("IOCat fails")
+	}
+}
