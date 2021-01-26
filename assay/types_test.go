@@ -64,11 +64,11 @@ func TestRecover(t *testing.T) {
 	}
 
 	c = fail()(c)
-	if c.Fail != nil {
-		t.Error("IOCat fails")
+	if c.Fail == nil {
+		t.Error("IOCat should fails")
 	}
-	if c.Recover() != nil {
-		t.Error("IOCat fails")
+	if c.Recover() == nil {
+		t.Error("IOCat should fails")
 	}
 
 	c = identity()(c)
