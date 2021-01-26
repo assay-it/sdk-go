@@ -53,7 +53,7 @@ func (client *Client) ClientCredentials(token *Token) assay.Arrow {
 		ø.ContentForm(),
 		ø.Send(tAccessTokenRequest{
 			Type:  "client_credentials",
-			Scope: strings.Join(client.Scopes, ","),
+			Scope: strings.Join(client.Scopes, " "),
 		}),
 		ƒ.Code(http.StatusCodeOK),
 		ƒ.Recv(token),
