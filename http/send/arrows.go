@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/url"
 	"reflect"
 	"strings"
@@ -162,7 +163,16 @@ func Send(data interface{}) http.Arrow {
 			return cat
 		}
 
-		cat.HTTP.Send.Payload, cat.Fail = encode(*content, data)
+		switch stream := data.(type) {
+		case string:
+			cat.HTTP.Send.Payload = bytes.NewBuffer([]byte(stream))
+		case []byte:
+			cat.HTTP.Send.Payload = bytes.NewBuffer(stream)
+		case io.Reader:
+			cat.HTTP.Send.Payload = stream
+		default:
+			cat.HTTP.Send.Payload, cat.Fail = encode(*content, data)
+		}
 		return cat
 	}
 }

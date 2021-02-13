@@ -9,6 +9,8 @@
 package send_test
 
 import (
+	"bytes"
+	"io/ioutil"
 	"net/url"
 	"testing"
 
@@ -158,9 +160,10 @@ func TestSendJSON(t *testing.T) {
 		ø.Header("Content-Type").Is("application/json"),
 		ø.Send(Site{"host", "site"}),
 	)
-	cat := assay.IO(http.Default())
+	cat := req(http.DefaultIO())
+	buf, _ := ioutil.ReadAll(cat.HTTP.Send.Payload)
 
-	if cat = req(cat); cat.HTTP.Send.Payload.String() != "{\"site\":\"host\",\"host\":\"site\"}" {
+	if string(buf) != "{\"site\":\"host\",\"host\":\"site\"}" {
 		t.Error("failed to encode JSON")
 	}
 }
@@ -176,10 +179,31 @@ func TestSendForm(t *testing.T) {
 		ø.Header("Content-Type").Is("application/x-www-form-urlencoded"),
 		ø.Send(Site{"host", "site"}),
 	)
-	cat := assay.IO(http.Default())
+	cat := req(http.DefaultIO())
+	buf, _ := ioutil.ReadAll(cat.HTTP.Send.Payload)
 
-	if cat = req(cat); cat.HTTP.Send.Payload.String() != "host=site&site=host" {
+	if string(buf) != "host=site&site=host" {
 		t.Error("failed to encode forms")
+	}
+}
+
+func TestSendBytes(t *testing.T) {
+	for _, val := range []interface{}{
+		"host=site",
+		[]byte("host=site"),
+		bytes.NewBuffer([]byte("host=site")),
+	} {
+		req := http.Join(
+			ø.URL("GET", "https://example.com"),
+			ø.Header("Content-Type").Is("text/plain"),
+			ø.Send(val),
+		)
+		cat := req(http.DefaultIO())
+		buf, _ := ioutil.ReadAll(cat.HTTP.Send.Payload)
+
+		if string(buf) != "host=site" {
+			t.Error("failed to encode content")
+		}
 	}
 }
 
