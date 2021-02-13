@@ -55,7 +55,7 @@ func (client *Client) ClientCredentials(token *Token) assay.Arrow {
 			Type:  "client_credentials",
 			Scope: strings.Join(client.Scopes, " "),
 		}),
-		ƒ.Code(http.StatusCodeOK),
+		ƒ.Code(http.StatusOK),
 		ƒ.Recv(token),
 	).Then(
 		c.FMap(func() error {
