@@ -25,7 +25,7 @@ func TestJoin(t *testing.T) {
 
 	req := µ.Join(
 		ø.URL("GET", ts.URL+"/ok"),
-		ƒ.Code(µ.StatusCodeOK),
+		ƒ.Code(µ.StatusOK),
 	)
 
 	cat := assay.IO(µ.Default())
@@ -41,11 +41,11 @@ func TestJoinAssay(t *testing.T) {
 	req := assay.Join(
 		µ.Join(
 			ø.URL("GET", ts.URL+"/ok"),
-			ƒ.Code(µ.StatusCodeOK),
+			ƒ.Code(µ.StatusOK),
 		),
 		µ.Join(
 			ø.URL("GET", ts.URL),
-			ƒ.Code(µ.StatusCodeBadRequest),
+			ƒ.Code(µ.StatusBadRequest),
 		),
 	)
 

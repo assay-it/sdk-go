@@ -2,8 +2,8 @@ name: build
 on:
   push:
     branches:
-      - master
-      - /refs/heads/master
+      - main
+      - /refs/heads/main
 
 jobs:
   build:

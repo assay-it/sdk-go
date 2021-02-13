@@ -5,7 +5,7 @@
 [![Documentation](https://pkg.go.dev/badge/github.com/assay-it/sdk-go)](https://pkg.go.dev/github.com/assay-it/sdk-go)
 [![Build Status](https://github.com/assay-it/sdk-go/workflows/build/badge.svg)](https://github.com/assay-it/sdk-go/actions/)
 [![Git Hub](https://img.shields.io/github/last-commit/assay-it/sdk-go.svg)](http://github.com/assay-it/sdk-go)
-[![Coverage Status](https://coveralls.io/repos/github/assay-it/sdk-go/badge.svg?branch=master)](https://coveralls.io/github/assay-it/sdk-go?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/assay-it/sdk-go/badge.svg?branch=main)](https://coveralls.io/github/assay-it/sdk-go?branch=main)
 [![Go Report Card](https://goreportcard.com/badge/github.com/assay-it/sdk-go)](https://goreportcard.com/report/github.com/assay-it/sdk-go)
 [![Maintainability](https://api.codeclimate.com/v1/badges/9e6bbe00ab093e5465ff/maintainability)](https://codeclimate.com/github/assay-it/sdk-go/maintainability)
 
@@ -46,7 +46,7 @@ import (
 func TestOk() assay.Arrow {
   return http.Join(
     ø.GET("https://assay.it"),
-    ƒ.Code(http.StatusCodeOK),
+    ƒ.Code(http.StatusOK),
     ƒ.Header("Content-Type").Is("text/html"),
   )
 }
