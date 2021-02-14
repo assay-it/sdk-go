@@ -77,6 +77,16 @@ func TestURLEscape(t *testing.T) {
 	}
 }
 
+func TestURLEscapeSkip(t *testing.T) {
+	a := "a/b"
+	req := ø.URL("GET", "!https://example.com/%s", &a)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); cat.HTTP.Send.URL.String() != "https://example.com/a/b" {
+		t.Error("unable to assign params to url")
+	}
+}
+
 func TestURLType(t *testing.T) {
 	a := "a b"
 	b := 1
