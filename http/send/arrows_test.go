@@ -99,6 +99,17 @@ func TestURLType(t *testing.T) {
 	}
 }
 
+func TestURLLazyVal(t *testing.T) {
+	a := func() string { return "a" }
+
+	req := ø.URL("GET", "https://example.com/%s", a)
+	cat := assay.IO(http.Default())
+
+	if cat = req(cat); cat.HTTP.Send.URL.String() != "https://example.com/a" {
+		t.Error("unable to assign params to url")
+	}
+}
+
 func TestHeaderByLit(t *testing.T) {
 	req := http.Join(
 		ø.URL("GET", "http://example.com"),
